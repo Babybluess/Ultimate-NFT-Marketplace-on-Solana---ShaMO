@@ -6,10 +6,11 @@ function UpdatedIMG({ name }) {
    const inputRef = useRef(null)
 
    const updateURL = (e) => {
-      inputRef.current.click();
-      setUrl(e.target.files[0]);
+      setUrl(URL.createObjectURL(e.target.files[0]))
       setUpload(true);
    };
+
+   console.log(url)
 
    return (
       <>
@@ -19,7 +20,7 @@ function UpdatedIMG({ name }) {
             >
                <div className=" w-full justify-center flex items-center">
                   <input
-                     onChange={(e) => console.log(e.target.files[0])}
+                     onChange={(e) => updateURL(e)}
                      type="file"
                      className={` ${name == "Background" ? "w-[10%]" : "w-[80%]"} text-white`}
                   ></input>

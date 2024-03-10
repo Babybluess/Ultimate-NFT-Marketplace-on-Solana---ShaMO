@@ -1,17 +1,22 @@
+"use client";
 import React, { useState } from "react";
 import { Bounce, ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useRouter } from "next/router";
 import Select from "react-select";
 import { NFTModel } from "@/components";
+import Link from "next/link";
+import createnft from "@/role/createNFT/createnft";
 
 function index() {
+   const [ownerNFT, setOwnerNFT] = useState("");
    const [nameNFT, setNameNFT] = useState("");
    const [urlNFT, setUrlNFT] = useState("");
    const [urlNFTLocation, setUrlNFTLocation] = useState("");
    const [typeNFT, setTypeNFT] = useState("");
    const [supplyNFT, setSupplyNFT] = useState("");
    const [descriptionNFT, setDecripstionNFT] = useState("");
+   const [isVideo, setIsVideo] = useState(false);
 
    const typeOptions = [
       { value: "Art", label: "Art" },
@@ -30,37 +35,42 @@ function index() {
    const updateURL = (e: any) => {
       const image = e.target.files[0];
       const nImage = URL.createObjectURL(e.target.files[0]);
-      setUrlNFT(nImage);
       setUrlNFTLocation(image);
+      setUrlNFT(nImage);
    };
 
-   // Function to mint NFT
-   const mintNFT = () => {
-      toast.success('🦄 It is successfull NFT Minting!', {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "dark",
-        transition: Bounce,
-      })
+
+   // Function to create NFT
+   const createNFT = () => {
+      createnft(ownerNFT, nameNFT, descriptionNFT, urlNFTLocation)
+      toast.success("🦄 It is successfull NFT Minting!", {
+         position: "top-right",
+         autoClose: 5000,
+         hideProgressBar: false,
+         closeOnClick: true,
+         pauseOnHover: true,
+         draggable: true,
+         progress: undefined,
+         theme: "dark",
+         transition: Bounce,
+      });
    };
 
    const nftDefault = [
       {
          id: 0,
-         imgNFT: "./images/bannerIMG/redCap.png",
-         nameNFT: "",
-         imgOwner: "https://i.pinimg.com/236x/54/26/7a/54267af70300dc246475a073d037c93a.jpg",
+         imgNFT: urlNFT,
+         nameNFT: nameNFT,
+         imgOwner:
+            "https://i.pinimg.com/236x/54/26/7a/54267af70300dc246475a073d037c93a.jpg",
          nameOwner: "",
-         type: "",
+         type: typeNFT,
          price: "0.0",
          isVideo: false,
       },
    ];
+
+   console.log(nameNFT, typeNFT, supplyNFT, descriptionNFT);
 
    return (
       <div className="w-full min-h-full flex flex-col justify-center items-center gap-16 py-5 bg-black">
@@ -127,6 +137,18 @@ function index() {
                   </div>
                   <div className=" flex flex-col gap-2">
                      <label htmlFor="" className=" text-gray-300 text-xl">
+                        Owner
+                     </label>
+                     <input
+                        required
+                        onChange={(e) => setOwnerNFT(e.target.value)}
+                        type="text"
+                        placeholder="Enter the owner of your NFT"
+                        className=" text-white bg-transparent border-[1px] px-2 h-[50px] w-[350px] valid:border-[#1a73e8] rounded-md"
+                     />
+                  </div>
+                  <div className=" flex flex-col gap-2">
+                     <label htmlFor="" className=" text-gray-300 text-xl">
                         Name
                      </label>
                      <p className="text-gray-600 text-sm">Enter the name of your NFT</p>
@@ -147,7 +169,7 @@ function index() {
                         required
                         onChange={(e) => setSupplyNFT(e.target.value)}
                         type="text"
-                        placeholder="Enter the name of your NFT"
+                        placeholder="Enter the supply of your NFT"
                         className=" text-white bg-transparent border-[1px] px-2 h-[50px] w-[350px] valid:border-[#1a73e8] rounded-md"
                      />
                   </div>
@@ -158,19 +180,78 @@ function index() {
                      <p className="text-gray-600 text-sm">
                         The description will be included on the Item's detail page.
                      </p>
-                        <input
-                           required
-                           type="text"
-                           placeholder="Enter details about the product"
-                           onChange={(e) => setDecripstionNFT(e.target.value)}
-                           className=" text-white bg-transparent break-words border-[1px] px-2 min-h-[150px] valid:border-[#1a73e8] rounded-md"
-                      />
+                     <input
+                        required
+                        type="text"
+                        placeholder="Enter details about the product"
+                        onChange={(e) => setDecripstionNFT(e.target.value)}
+                        className=" text-white bg-transparent break-words border-[1px] px-2 min-h-[150px] valid:border-[#1a73e8] rounded-md"
+                     />
                   </div>
                </div>
             </section>
+            {/* Preview */}
             <section className=" w-[550px] h-[600px] max-sm:w-[450px] rounded-md flex flex-col gap-5 justify-center items-center shadow-inner shadow-indigo-300">
-               <NFTModel nfts={nftDefault} />
-               <button className='text-white font-semibold text-xl rounded-xl p-3 bg-blue-500' onClick={() => mintNFT()}>Create NFT</button>
+               <div className="w-[55%] shadow-inner shadow-indigo-500 flex flex-col justify-center items-center border-2 border-[#5B3BA8] rounded-md bg-[#28262F] relative ">
+                  <div className=" w-[30%] text-center absolute left-0 top-0 z-40 text-white font-medium rounded-br-xl bg-[#5C3CA8]">
+                     <p>{typeNFT}</p>
+                  </div>
+                  <div className=" px-0 w-[70%] h-[60vh] flex flex-col text-white gap-2 p-5 rounded-t-xl ">
+                     <div className=" w-full h-[65%] rounded-t-xl">
+                        {isVideo == true ? (
+                           <video
+                              className=" rounded-t-xl h-full w-full object-fill"
+                              autoPlay={true}
+                              loop
+                              controls={false}
+                              muted
+                           >
+                              <source
+                                 src={urlNFT}
+                                 className=" w-full h-full"
+                                 type="video/mp4"
+                              />
+                           </video>
+                        ) : (
+                           <img
+                              className=" w-full h-full rounded-t-xl object-cover"
+                              src={urlNFT}
+                           />
+                        )}
+                     </div>
+                     <p className=" text-xl font-semibold">{nameNFT}</p>
+                     <div className=" w-full flex gap-2">
+                        <div className=" w-6 h-6">
+                           <img
+                              className=" h-full w-full object-cover rounded-full"
+                              src={"./images/bannerIMG/PAP.png"}
+                           />
+                        </div>
+                        <p>PXuusn</p>
+                     </div>
+                     <p className=" text-gray-500 font-medium">Price for Sell:</p>
+                     <div className=" w-full flex justify-between items-center">
+                        <div className=" flex w-full gap-1">
+                           <div className=" w-5 h-5">
+                              <img src="./images/sponsorIMG/ethereum.png" />
+                           </div>
+                           <p>0.0</p>
+                        </div>
+                        <Link
+                           href={{ pathname: `/nftDetail/${nameNFT}` }}
+                           className=" w-[90%] p-1 bg-[#593F9F] rounded-tr-xl rounded-bl-xl "
+                        >
+                           See Detail &#8594;
+                        </Link>
+                     </div>
+                  </div>
+               </div>
+               <button
+                  className="text-white font-semibold text-xl rounded-xl p-3 bg-blue-500"
+                  onClick={() => createNFT()}
+               >
+                  Create NFT
+               </button>
             </section>
          </div>
          <ToastContainer

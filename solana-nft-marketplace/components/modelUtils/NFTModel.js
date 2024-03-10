@@ -6,13 +6,13 @@ function NFTModel(props) {
 
    return (
       <div
-         className={` ${nft.imgNFT == undefined ? "w-[50%]" : "w-[25%]"} shadow-inner shadow-indigo-500 flex flex-col justify-center items-center border-2 border-[#5B3BA8] rounded-md bg-[#28262F] relative`}
+         className={` ${nft.imgNFT == undefined ? "w-[55%]" : "w-[25%]"} shadow-inner shadow-indigo-500 flex flex-col justify-center items-center border-2 border-[#5B3BA8] rounded-md bg-[#28262F] relative`}
       >
          <div className=" w-[30%] text-center absolute left-0 top-0 z-40 text-white font-medium rounded-br-xl bg-[#5C3CA8]">
             <p>{nft.type}</p>
          </div>
          <div
-            className={` ${nft.imgNFT == undefined ? " px-0 w-[70%] " : ""} h-[60vh] flex flex-col text-white gap-2 p-5 rounded-t-xl `}
+            className={` ${nft.imgNFT == undefined ? " px-0 w-[70%] " : "" } h-[60vh] flex flex-col text-white gap-2 p-5 rounded-t-xl `}
          >
             <div className=" w-full h-[65%] rounded-t-xl">
                {nft.type == "Video" ? (
@@ -41,7 +41,7 @@ function NFTModel(props) {
                <div className=" w-6 h-6">
                   <img
                      className=" h-full w-full object-cover rounded-full"
-                     src={nft.imgOwner}
+                     src={"https://ivory-necessary-cougar-154.mypinata.cloud/ipfs/QmTmVBxUE8xZcZ9n1jFRXhsPp4okaPMBPfRhxLuysXftP7"}
                   />
                </div>
                <p>{nft.nameOwner}</p>
@@ -55,7 +55,7 @@ function NFTModel(props) {
                   <p>{nft.price}</p>
                </div>
                <Link
-                  href={{ pathname:`/${nft.nameNFT}`}}
+                  href={{ pathname:`/nftDetail/${nft.nameNFT}`}}
                   className={` ${nft.imgNFT == undefined ? " w-[90%] " : "w-[60%]"} p-1 bg-[#593F9F] rounded-tr-xl rounded-bl-xl`}
                >
                   See Detail &#8594;

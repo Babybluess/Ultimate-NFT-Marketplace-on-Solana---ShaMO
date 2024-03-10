@@ -1,8 +1,9 @@
 import React from "react";
 import { Link } from 'react-scroll';
-
+import { WalletMultiButton } from '@solana/wallet-adapter-react-ui'
 
 function Navbar() {
+
    return (
       <div className=" w-full z-30 rounded-t-3xl text-white border-4 border-b-0 border-[#F7F7F9] px-5 py-2 justify-between items-center flex ">
          <div className=" w-[15%] h-[60%] ">
@@ -18,7 +19,9 @@ function Navbar() {
                <Link to="AIConsultancy" className=" cursor-pointer">AI Consultancy</Link>
             </ul>
          </div>
-         <button className=" bg-[#2CAFBF] px-3 py-1 rounded-full">Connect Wallet</button>
+         <div>
+         <WalletMultiButton/>
+         </div>
       </div>
    );
 }

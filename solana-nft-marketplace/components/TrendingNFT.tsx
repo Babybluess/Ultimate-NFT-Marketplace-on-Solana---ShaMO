@@ -5,24 +5,26 @@ function TrendingNFT() {
     const trendingNFTList = [
         {
             id: 0,
-            imgNFT: "https://i.pinimg.com/564x/b7/a8/dc/b7a8dc1fd58a1813941a13f6e1f96911.jpg",
+            imgNFT: "./images/bannerIMG/CHRISTIAN.png",
             nameNFT: "Mask Girl",
-            imgOwner: "https://i.pinimg.com/236x/ab/90/d9/ab90d9385c969cf62c6e009810dfb849.jpg",
+            imgOwner:
+               "https://i.pinimg.com/236x/ab/90/d9/ab90d9385c969cf62c6e009810dfb849.jpg",
             nameOwner: "Poscai",
             type: "Art",
             price: "29.2",
-            isVideo: false
-        },
-        {
+            isVideo: false,
+         },
+         {
             id: 1,
-            imgNFT: "https://i.pinimg.com/236x/b4/9c/2e/b49c2e403209ea58064264b17655dc14.jpg",
+            imgNFT: "./images/bannerIMG/EvijanWatson.png",
             nameNFT: "Inspect Girl",
-            imgOwner: "https://i.pinimg.com/236x/10/b1/d0/10b1d0c15f2defa69f717b1aa52b9cf4.jpg",
+            imgOwner:
+               "https://i.pinimg.com/236x/10/b1/d0/10b1d0c15f2defa69f717b1aa52b9cf4.jpg",
             nameOwner: "Miek",
             type: "Comic",
             price: "38.2",
-            isVideo: false
-        },
+            isVideo: false,
+         },
         {
             id: 2,
             imgNFT: "./video/galaxy.mp4",
