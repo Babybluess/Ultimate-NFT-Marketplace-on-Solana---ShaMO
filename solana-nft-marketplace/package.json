@@ -11,6 +11,7 @@
   "dependencies": {
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.0",
+    "@metaplex-foundation/js": "^0.20.1",
     "@mui/material": "^5.15.11",
     "@pinata/sdk": "^2.1.0",
     "@shyft-to/js": "^0.2.36",
@@ -18,7 +19,7 @@
     "@solana/wallet-adapter-react": "^0.15.35",
     "@solana/wallet-adapter-react-ui": "^0.9.35",
     "@solana/wallet-adapter-wallets": "^0.19.31",
-    "@solana/web3.js": "^1.91.0",
+    "@solana/web3.js": "^1.91.1",
     "@tanstack/react-query": "^5.25.0",
     "axios": "^1.6.7",
     "base-58": "^0.0.1",

@@ -5,6 +5,7 @@ import Marketplace from "./Marketplace";
 import AIGen from "./AIGen";
 import Airdrop from "./Airdrop";
 import AISupport from "./AISupport";
+import NFTLending from "./NFTLending";
 import Footer from "./Footer";
 import UpdatedIMG from './modelUtils/UpdatedIMG'
 import NFTModel from "./modelUtils/NFTModel";
@@ -19,5 +20,6 @@ export {
     AISupport,
     Footer,
     UpdatedIMG,
-    NFTModel
+    NFTModel,
+    NFTLending,
 }
