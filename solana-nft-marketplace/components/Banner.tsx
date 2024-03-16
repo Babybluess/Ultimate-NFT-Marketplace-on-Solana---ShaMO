@@ -1,8 +1,19 @@
-import React from "react";
+'use client'
+import React, { useEffect, useState } from "react";
 import styled, { keyframes, css } from "styled-components";
 import Link from "next/link";
+import { useSelector, useDispatch } from "react-redux";
+import { useWallet } from "@solana/wallet-adapter-react";
+import axios from "axios";
+import { updateNFTs } from "@/script/action/signer/signerAction";
+import { Network } from "@shyft-to/js";
 
 function Banner() {
+   // const address = useSelector((state:any) => state.signerReducer.address)
+   const { publicKey } = useWallet()
+   const [nfts, setNFTs] = useState<any[]>([])
+   const dispatch = useDispatch()
+
    const nftList = [
       "./images/bannerIMG/angle.png",
       "./images/bannerIMG/CHRISTIAN.png",
@@ -33,8 +44,47 @@ function Banner() {
          name: "Solana",
       },
    ];
-   
 
+   const fetchNFTs = () => { 
+         let nftUrl = `https://api.shyft.to/sol/v1/nft/read_all?network=${Network.Devnet}&address=${publicKey?.toBase58()}`;
+         axios({
+           url: nftUrl,
+           method: "GET",
+           headers: {
+             "Content-Type": "application/json",
+             "x-api-key": process.env.NEXT_PUBLIC_API_KEY,
+           },
+         })
+           .then((res:any) => {
+            res.data.result.forEach(async(event:any) => {
+               const tx = await axios.get(event.metadata_uri).then(e => {
+                  const dataNFT = {
+                     addressID: event.mint,
+                     name: e.data.name,
+                     type: e.data.attributes[0].type,
+                     description: e.data.description,
+                     img: e.data.image,
+                     owner: event.owner,
+                     supply: e.data.attributes[0].supply
+                  }
+                  nfts.push(dataNFT)
+               })
+            })
+            if (nfts !== undefined) {
+               dispatch(updateNFTs(nfts))
+            }
+            setNFTs([])
+           })
+      
+           .catch((err:any) => {
+             console.warn(err);
+           });
+       };
+
+       useEffect(() => {
+         fetchNFTs()
+       },[publicKey])
+      
    return (
       <div id="Home" className=" w-full z-30 justify-center items-center flex flex-col text-white border-x-4 border-[#F7F7F9] p-[5%] gap-10 ">
          <p className=" text-5xl text-center px-[15%]">
@@ -45,7 +95,7 @@ function Banner() {
             the blockchain for ownership and scarcity
          </p>
          <div className=" flex gap-5 text-xl justify-center items-center ">
-            <Link href={"/nftCollection"} className=" bg-[#2CAFBF] px-5 py-3 rounded-full">
+            <Link href={`/nftCollection/${publicKey?.toBase58()}`} className=" bg-[#2CAFBF] px-5 py-3 rounded-full">
                NFT Collection
             </Link>
             <Link href={"/nftCreation"} className=" cursor-pointer">Create NFT</Link>
@@ -54,15 +104,15 @@ function Banner() {
             <Marquee>
                <MarqueeGroup>
                   {nftList.map((e, index) => (
-                     <ImageGroup>
-                        <Image key={index} src={e} />
+                     <ImageGroup key={index}>
+                        <Image src={e} />
                      </ImageGroup>
                   ))}
                </MarqueeGroup>
                <MarqueeGroup>
                   {nftList.map((e, index) => (
-                     <ImageGroup>
-                        <Image key={index} className=" rounded-lg" src={e} />
+                     <ImageGroup key={index}>
+                        <Image className=" rounded-lg" src={e} />
                      </ImageGroup>
                   ))}
                </MarqueeGroup>

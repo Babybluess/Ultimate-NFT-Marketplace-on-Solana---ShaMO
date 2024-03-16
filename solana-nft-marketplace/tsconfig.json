@@ -26,7 +26,11 @@
       "**/*.ts",
       "**/*.tsx",
       ".next/types/**/*.ts",
-      "pages/_document.js"
-, "components/modelUtils/NFTModel.js"   ],
+      "pages/_document.tsx",
+      "components/modelUtils/NFTModel.js",
+      "utils/context/index.js",
+      "utils/connectWallet/ConnectWallet.tsx",
+      "role/createNFT/createnft.js"
+, "components/Banner.tsx", "role/sellNFT/sellNFT.js", "role/unlistNFT/index.js", "pages/nftDetail/[id]/index.jsx"   ],
    "exclude": ["node_modules"]
 }

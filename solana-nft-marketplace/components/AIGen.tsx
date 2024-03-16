@@ -1,3 +1,4 @@
+"use client";
 import React, { useState } from 'react'
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
@@ -44,8 +45,8 @@ function AIGen() {
         <div className=' flex gap-5'>
             {
                 imageList.map((e, index) => (
-                    <>
-                        <div onClick={() => openClick(e)} className=' w-[10vw] h-[20vh] border-2 border-green-400 rounded-lg cursor-pointer' key={index}>
+                    <div key={index}>
+                        <div  onClick={() => openClick(e)} className=' w-[10vw] h-[20vh] border-2 border-green-400 rounded-lg cursor-pointer' key={index}>
                             <img className=' h-full w-full rounded-lg object-cover' src={e} alt="" />
                         </div>
                             <Modal
@@ -85,7 +86,7 @@ function AIGen() {
                                     </Box>
                                 </Box>
                             </Modal>
-                    </>
+                    </div>
                 ))
             }
         </div>

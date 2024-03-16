@@ -1,3 +1,4 @@
+"use client";
 import Navbar from "./Navbar";
 import Banner from "./Banner";
 import TrendingNFT from "./TrendingNFT";
@@ -8,6 +9,7 @@ import AISupport from "./AISupport";
 import Footer from "./Footer";
 import UpdatedIMG from './modelUtils/UpdatedIMG'
 import NFTModel from "./modelUtils/NFTModel";
+import Bidding from "./Bidding";
 
 export {
     Navbar,
@@ -19,5 +21,6 @@ export {
     AISupport,
     Footer,
     UpdatedIMG,
-    NFTModel
+    NFTModel,
+    Bidding
 }

@@ -1,3 +1,4 @@
+"use client";
 import React from 'react'
 import NFTModel from './modelUtils/NFTModel'
 
@@ -5,30 +6,32 @@ function TrendingNFT() {
     const trendingNFTList = [
         {
             id: 0,
-            imgNFT: "https://i.pinimg.com/564x/b7/a8/dc/b7a8dc1fd58a1813941a13f6e1f96911.jpg",
-            nameNFT: "Mask Girl",
-            imgOwner: "https://i.pinimg.com/236x/ab/90/d9/ab90d9385c969cf62c6e009810dfb849.jpg",
-            nameOwner: "Poscai",
+            img: "./images/bannerIMG/CHRISTIAN.png",
+            name: "Mask Girl",
+            imgOwner:
+               "https://i.pinimg.com/236x/ab/90/d9/ab90d9385c969cf62c6e009810dfb849.jpg",
+            owner: "Poscai",
             type: "Art",
             price: "29.2",
-            isVideo: false
-        },
-        {
+            isVideo: false,
+         },
+         {
             id: 1,
-            imgNFT: "https://i.pinimg.com/236x/b4/9c/2e/b49c2e403209ea58064264b17655dc14.jpg",
-            nameNFT: "Inspect Girl",
-            imgOwner: "https://i.pinimg.com/236x/10/b1/d0/10b1d0c15f2defa69f717b1aa52b9cf4.jpg",
-            nameOwner: "Miek",
+            img: "./images/bannerIMG/EvijanWatson.png",
+            name: "Inspect Girl",
+            imgOwner:
+               "https://i.pinimg.com/236x/10/b1/d0/10b1d0c15f2defa69f717b1aa52b9cf4.jpg",
+            owner: "Miek",
             type: "Comic",
             price: "38.2",
-            isVideo: false
-        },
+            isVideo: false,
+         },
         {
             id: 2,
-            imgNFT: "./video/galaxy.mp4",
-            nameNFT: "Abstract Wave",
+            img: "./video/galaxy.mp4",
+            name: "Abstract Wave",
             imgOwner: "https://i.pinimg.com/236x/54/26/7a/54267af70300dc246475a073d037c93a.jpg",
-            nameOwner: "Lykie",
+            owner: "Lykie",
             type: "Video",
             price: "12.7",
             isVideo: true
@@ -44,7 +47,7 @@ function TrendingNFT() {
         <div className=' w-full flex justify-between items-center p-10'>
             {
                 trendingNFTList.map((e, index) => (
-                    <NFTModel key={index} nfts={e}/>
+                    <NFTModel key={index} nfts={e} isSell={false}/>
                 ))
             }
         </div>

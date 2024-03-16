@@ -1,111 +1,174 @@
-import React, { useState } from 'react'
-import styled from 'styled-components'
-import NFTModel from './modelUtils/NFTModel'
+"use client";
+import React, { useEffect, useState } from "react";
+import styled from "styled-components";
+import NFTModel from "./modelUtils/NFTModel";
+import axios from "axios";
+import {  useDispatch, useSelector } from "react-redux";
+import { getNFTMarket } from "@/script/action/marketplace/marketAction";
+import { Network, ShyftSdk } from "@shyft-to/js";
+import { useWallet } from "@solana/wallet-adapter-react";
+import { CircularProgress } from "@mui/material";
+import { getAddressID } from "@/script/action/marketplace/marketAction";
 
 function Marketplace() {
-    const [isChoose, setChoose] = useState("")
-    const [nft, setNFT] = useState<any>([])
+   const [isChoose, setChoose] = useState("");
+   const [nfts, setNFTs] = useState<any[]>([]);
+   const [loading, isLoading] = useState(false)
+   const [listAddressID, setAddressID] = useState<any[]>([])
+   const dispatch = useDispatch();
+   const marketNFT = useSelector((state:any) => state.marketReducer.NFTs)
+   const { publicKey } = useWallet()
 
-    const changeNFT = (type: string) => {
-        setNFT(nfts.filter((e:any) => e.type == type))
-        setChoose(type)
-    }
+   const changeNFT = (type: string) => {
+      isLoading(true)
+      if (type == "All" ) {
+         setNFTs(marketNFT)
+      } else {
+         setNFTs(marketNFT.filter((item:any) => item.type == type))
+      }
+      setChoose(type)
+      isLoading(false)
+   };
 
-    const nfts = [
-        {
-            id: 0,
-            imgNFT: "https://i.pinimg.com/564x/b7/a8/dc/b7a8dc1fd58a1813941a13f6e1f96911.jpg",
-            nameNFT: "Mask Girl",
-            imgOwner: "https://i.pinimg.com/236x/ab/90/d9/ab90d9385c969cf62c6e009810dfb849.jpg",
-            nameOwner: "Poscai",
-            type: "Art",
-            price: "29.2",
-            isVideo: false
-        },
-        {
-            id: 1,
-            imgNFT: "https://i.pinimg.com/236x/b4/9c/2e/b49c2e403209ea58064264b17655dc14.jpg",
-            nameNFT: "Inspect Girl",
-            imgOwner: "https://i.pinimg.com/236x/10/b1/d0/10b1d0c15f2defa69f717b1aa52b9cf4.jpg",
-            nameOwner: "Miek",
-            type: "Comic",
-            price: "38.2",
-            isVideo: false
-        },
-        {
-            id: 2,
-            imgNFT: "./video/galaxy.mp4",
-            nameNFT: "Abstract Wave",
-            imgOwner: "https://i.pinimg.com/236x/54/26/7a/54267af70300dc246475a073d037c93a.jpg",
-            nameOwner: "Lykie",
-            type: "Video",
-            price: "12.7",
-            isVideo: true
-        },
-        {
-            id: 3,
-            imgNFT: "./images/bannerIMG/goldenSnake.png",
-            nameNFT: "Golden Snake",
-            imgOwner: "https://i.pinimg.com/236x/54/26/7a/54267af70300dc246475a073d037c93a.jpg",
-            nameOwner: "Lykie",
-            type: "Abstract",
-            price: "12.7",
-            isVideo: true
-        },
-        {
-            id: 4,
-            imgNFT: "./images/bannerIMG/redCap.png",
-            nameNFT: "Red Cap",
-            imgOwner: "https://i.pinimg.com/236x/54/26/7a/54267af70300dc246475a073d037c93a.jpg",
-            nameOwner: "Lykie",
-            type: "Gorilla",
-            price: "12.7",
-            isVideo: true
-        }
-    ]
+   const fetchNFTs = () => {
+      let nftUrl = `https://api.shyft.to/sol/v1/marketplace/active_listings?network=${Network.Devnet}&marketplace_address=${process.env.NEXT_PUBLIC_ADDRESS_MARKETPLACE}`;
+      axios({
+         url: nftUrl,
+         method: "GET",
+         headers: {
+            "Content-Type": "application/json",
+            "x-api-key": process.env.NEXT_PUBLIC_API_KEY,
+         },
+      })
+         .then((res: any) => {
+            console.log(res.data.result);
+            const nft = new Array();
+            res.data.result.forEach(async (event: any) => {
+               const tx = await axios.get(event.nft.metadata_uri).then((e) => {
+                  const dataNFT = {
+                     addressID: event.nft_address,
+                     name: e.data.name,
+                     type: e.data.attributes[0].type,
+                     description: e.data.description,
+                     img: e.data.image,
+                     owner: event.nft.owner,
+                     supply: e.data.attributes[0].supply,
+                     seller: event.seller_address,
+                     price: event.price,
+                     list_state: event.list_state,
+                  };
+                  nft.push(dataNFT);
+                  listAddressID.push(event.nft_address)
+               });
+            });
+            dispatch(getNFTMarket(nft));
+            dispatch(getAddressID(listAddressID))
+            setNFTs(nft);
+         })
 
-  return (
-    <div id='Marketplace' className=' w-full px-10 py-5 border-x-4 border-[#F7F7F9] z-30 flex flex-col gap-10 justify-center items-center text-white'>
-        <div className=' w-full flex justify-between'>
-            <div className='flex w-[35%] justify-center items-center'>
-                <p className=' text-3xl font-bold'>POPULAR COLLECTION NFT DIGITAL ART</p>
-                <div className=' w-[150px] h-[100px] justify-start flex items-start animate-pulse'>
-                    <img src='/images/Uranus_Crypto_Card_-_Rarible___OpenSea-removebg-preview.png' alt='' className=' object-cover'/>
-                </div>
+         .catch((err: any) => {
+            console.warn(err);
+         });
+   };
+
+   useEffect(() => {
+      fetchNFTs();
+      // console.log("nft market", nfts);
+   }, []);
+
+   return (
+      <div
+         id="Marketplace"
+         className=" w-full px-10 py-5 border-x-4 border-[#F7F7F9] z-30 flex flex-col gap-10 justify-center items-center text-white"
+      >
+         <div className=" w-full flex justify-between">
+            <div className="flex w-[35%] justify-center items-center">
+               <p className=" text-3xl font-bold">POPULAR COLLECTION NFT DIGITAL ART</p>
+               <div className=" w-[150px] h-[100px] justify-start flex items-start animate-pulse">
+                  <img
+                     src="/images/Uranus_Crypto_Card_-_Rarible___OpenSea-removebg-preview.png"
+                     alt=""
+                     className=" object-cover"
+                  />
+               </div>
             </div>
-            <div className=' w-[30%]'>
-                <p className=' py-5 text-gray-300'>We have some of the most popular digital assets that can be recommended for you, which you also get for your new collection.</p>
-                <button className=' text-violet-500'>See detail &#8594;</button>
+            <div className=" w-[30%]">
+               <p className=" py-5 text-gray-300">
+                  We have some of the most popular digital assets that can be recommended
+                  for you, which you also get for your new collection.
+               </p>
+               <button className=" text-violet-500">See detail &#8594;</button>
             </div>
-        </div>
-        <div className=' justify-start flex w-[100%]'> 
-            <div className=' flex gap-5'>
-                <FilterType onClick={() => changeNFT("All")} className= {` ${isChoose == "All" ? " bg-[#825CE8] text-white " : "border-[#825CE8] text-[#825CE8] "}`}>All</FilterType>
-                <FilterType onClick={() => changeNFT("Art")} className={` ${isChoose == "Art" ? " bg-[#825CE8] text-white " : "border-[#825CE8] text-[#825CE8] "}`}>Art</FilterType>
-                <FilterType onClick={() => changeNFT("Abstract")} className={` ${isChoose == "Abstract" ? " bg-[#825CE8] text-white " : "border-[#825CE8] text-[#825CE8] "}`}>Abstract</FilterType>
-                <FilterType onClick={() => changeNFT("Gorrilla")} className={` ${isChoose == "Gorrilla" ? " bg-[#825CE8] text-white " : "border-[#825CE8] text-[#825CE8] "}`}>Gorilla</FilterType>
-                <FilterType onClick={() => changeNFT("Monkey")} className={` ${isChoose == "Monkey" ? " bg-[#825CE8] text-white " : "border-[#825CE8] text-[#825CE8] "}`}>Monkey</FilterType>
-                <FilterType onClick={() => changeNFT("Comic")} className={` ${isChoose == "Comic" ? " bg-[#825CE8] text-white " : "border-[#825CE8] text-[#825CE8] "}`}>Comic</FilterType>
-                <FilterType onClick={() => changeNFT("Video")} className={` ${isChoose == "Video" ? " bg-[#825CE8] text-white " : "border-[#825CE8] text-[#825CE8] "}`}>Video</FilterType>
+         </div>
+         <div className=" justify-start flex w-[100%]">
+            <div className=" flex gap-5">
+               <FilterType
+                  onClick={() => changeNFT("All")}
+                  className={` ${isChoose == "All" ? " bg-[#825CE8] text-white " : "border-[#825CE8] text-[#825CE8] "}`}
+               >
+                  All
+               </FilterType>
+               <FilterType
+                  onClick={() => changeNFT("Art")}
+                  className={` ${isChoose == "Art" ? " bg-[#825CE8] text-white " : "border-[#825CE8] text-[#825CE8] "}`}
+               >
+                  Art
+               </FilterType>
+               <FilterType
+                  onClick={() => changeNFT("Abstract")}
+                  className={` ${isChoose == "Abstract" ? " bg-[#825CE8] text-white " : "border-[#825CE8] text-[#825CE8] "}`}
+               >
+                  Abstract
+               </FilterType>
+               <FilterType
+                  onClick={() => changeNFT("Gorrilla")}
+                  className={` ${isChoose == "Gorrilla" ? " bg-[#825CE8] text-white " : "border-[#825CE8] text-[#825CE8] "}`}
+               >
+                  Gorilla
+               </FilterType>
+               <FilterType
+                  onClick={() => changeNFT("Monkey")}
+                  className={` ${isChoose == "Monkey" ? " bg-[#825CE8] text-white " : "border-[#825CE8] text-[#825CE8] "}`}
+               >
+                  Monkey
+               </FilterType>
+               <FilterType
+                  onClick={() => changeNFT("Comic")}
+                  className={` ${isChoose == "Comic" ? " bg-[#825CE8] text-white " : "border-[#825CE8] text-[#825CE8] "}`}
+               >
+                  Comic
+               </FilterType>
+               <FilterType
+                  onClick={() => changeNFT("Video")}
+                  className={` ${isChoose == "Video" ? " bg-[#825CE8] text-white " : "border-[#825CE8] text-[#825CE8] "}`}
+               >
+                  Video
+               </FilterType>
             </div>
-        </div>
-        <div className=' w-full flex flex-wrap gap-[50px] justify-center items-center'>
+         </div>
+         <div className=" w-full flex flex-wrap gap-[50px] justify-center items-center">
             {
-                nfts.map((e, index) => (
-                    <NFTModel key={index} nfts={e} />
-                ))
+               loading == true
+               ?
+               <CircularProgress color="success" />
+               :
+               <>
+                  {nfts.map((e: any, index: number) => (
+                     <NFTModel key={index} nfts={e} isSell={false} />
+                  ))}
+               </>
             }
-        </div>
-    </div>
-  )
+         </div>
+      </div>
+   );
 }
 
-export default Marketplace
+export default Marketplace;
 
 const FilterType = styled.div`
-    padding: 0.5rem;
-    border-width: 2px;
-    border-color: #AAA1B6;
-    border-radius: 0.75rem;
-    cursor: pointer;
-`
+   padding: 0.5rem;
+   border-width: 2px;
+   border-color: #aaa1b6;
+   border-radius: 0.75rem;
+   cursor: pointer;
+`;

@@ -1,4 +1,5 @@
-import { Banner, Navbar, TrendingNFT, Marketplace, AIGen, Airdrop, AISupport, Footer } from '@/components';
+"use client";
+import { Banner, Navbar, TrendingNFT, Marketplace, AIGen, Airdrop, AISupport, Footer, Bidding } from '@/components';
 import React from 'react'
 
 function HomePage() {
@@ -8,6 +9,7 @@ function HomePage() {
         <Banner/>
         <TrendingNFT/>
         <Marketplace/>
+        <Bidding/>
         <AIGen/>
         <Airdrop/>
         <AISupport/>
