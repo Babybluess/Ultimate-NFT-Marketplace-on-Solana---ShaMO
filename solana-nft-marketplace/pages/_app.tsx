@@ -4,30 +4,27 @@ import Head from 'next/head';
 import '../public/css/loading.css';
 import '../public/css/globals.css';
 import '../public/css/local.css';
-import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react';
-import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
-import { UnsafeBurnerWalletAdapter } from '@solana/wallet-adapter-wallets';
+import { Provider } from 'react-redux'
+import myStore from '@/script/store/store';
+import { ConnectionProvider, WalletProvider } from "@solana/wallet-adapter-react";
+import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
+import { UnsafeBurnerWalletAdapter } from "@solana/wallet-adapter-wallets";
 import {
-    WalletModalProvider,
-    WalletDisconnectButton,
-    WalletMultiButton
-} from '@solana/wallet-adapter-react-ui';
-import { clusterApiUrl } from '@solana/web3.js';
-import { useMemo } from 'react';
-require('@solana/wallet-adapter-react-ui/styles.css');
+   WalletModalProvider,
+} from "@solana/wallet-adapter-react-ui";
+import { clusterApiUrl } from "@solana/web3.js";
+import { useMemo, useState } from 'react';
+require("@solana/wallet-adapter-react-ui/styles.css");
 
 const MyApp: NextPage<AppProps> = ({ Component, pageProps }: AppProps) => {
-
 	const network = WalletAdapterNetwork.Devnet;
-
-    const endpoint = useMemo(() => clusterApiUrl(network), [network]);
-
-    const wallets = useMemo(
-        () => [
-            new UnsafeBurnerWalletAdapter(),
-        ],
-        [network]
-    );
+	const [isConnect, setConnect] = useState(false);
+ 
+	const endpoint = useMemo(() => clusterApiUrl(network), [network]);
+ 
+	const wallets = useMemo(() => [new UnsafeBurnerWalletAdapter()], [network]);
+ 
+	console.log("is connect", isConnect);
 
 	return (
 		<>
@@ -57,13 +54,15 @@ const MyApp: NextPage<AppProps> = ({ Component, pageProps }: AppProps) => {
 				<meta name="viewport" content="initial-scale=1.0, width=device-width" />
 				<link rel="icon" href="../images/logoSolNFTss.ico" />
 			</Head>
-			<ConnectionProvider endpoint={endpoint}>
-	             <WalletProvider wallets={wallets} autoConnect>
- 	                 <WalletModalProvider>
-						<Component {...pageProps} />
-	                 </WalletModalProvider>
-	             </WalletProvider>
-	         </ConnectionProvider>
+			<Provider store={myStore}>
+				<ConnectionProvider endpoint={endpoint}>
+					<WalletProvider wallets={wallets} autoConnect>
+						<WalletModalProvider>
+							<Component {...pageProps} />
+						</WalletModalProvider>
+					</WalletProvider>
+				</ConnectionProvider>
+			</Provider>
 		</>
 	);
 };

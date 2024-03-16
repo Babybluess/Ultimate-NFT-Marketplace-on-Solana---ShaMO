@@ -1,73 +1,80 @@
-import React, { useState } from "react";
+"use client";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import NFTModel from "./modelUtils/NFTModel";
+import axios from "axios";
+import {  useDispatch, useSelector } from "react-redux";
+import { getNFTMarket } from "@/script/action/marketplace/marketAction";
+import { Network, ShyftSdk } from "@shyft-to/js";
+import { useWallet } from "@solana/wallet-adapter-react";
+import { CircularProgress } from "@mui/material";
+import { getAddressID } from "@/script/action/marketplace/marketAction";
 
 function Marketplace() {
    const [isChoose, setChoose] = useState("");
-   const [nft, setNFT] = useState<any>([]);
+   const [nfts, setNFTs] = useState<any[]>([]);
+   const [loading, isLoading] = useState(false)
+   const [listAddressID, setAddressID] = useState<any[]>([])
+   const dispatch = useDispatch();
+   const marketNFT = useSelector((state:any) => state.marketReducer.NFTs)
+   const { publicKey } = useWallet()
 
    const changeNFT = (type: string) => {
-      setNFT(nfts.filter((e: any) => e.type == type));
-      setChoose(type);
+      isLoading(true)
+      if (type == "All" ) {
+         setNFTs(marketNFT)
+      } else {
+         setNFTs(marketNFT.filter((item:any) => item.type == type))
+      }
+      setChoose(type)
+      isLoading(false)
    };
 
-   const nfts = [
-      {
-         id: 0,
-         imgNFT: "./images/bannerIMG/CHRISTIAN.png",
-         nameNFT: "Mask Girl",
-         imgOwner:
-            "https://i.pinimg.com/236x/ab/90/d9/ab90d9385c969cf62c6e009810dfb849.jpg",
-         nameOwner: "Poscai",
-         type: "Art",
-         price: "29.2",
-         isVideo: false,
-      },
-      {
-         id: 1,
-         imgNFT: "./images/bannerIMG/EvijanWatson.png",
-         nameNFT: "Inspect Girl",
-         imgOwner:
-            "https://i.pinimg.com/236x/10/b1/d0/10b1d0c15f2defa69f717b1aa52b9cf4.jpg",
-         nameOwner: "Miek",
-         type: "Comic",
-         price: "38.2",
-         isVideo: false,
-      },
-      {
-         id: 2,
-         imgNFT: "./video/galaxy.mp4",
-         nameNFT: "Abstract Wave",
-         imgOwner:
-            "https://i.pinimg.com/236x/54/26/7a/54267af70300dc246475a073d037c93a.jpg",
-         nameOwner: "Lykie",
-         type: "Video",
-         price: "12.7",
-         isVideo: true,
-      },
-      {
-         id: 3,
-         imgNFT: "./images/bannerIMG/goldenSnake.png",
-         nameNFT: "Golden Snake",
-         imgOwner:
-            "https://i.pinimg.com/236x/54/26/7a/54267af70300dc246475a073d037c93a.jpg",
-         nameOwner: "Lykie",
-         type: "Abstract",
-         price: "12.7",
-         isVideo: true,
-      },
-      {
-         id: 4,
-         imgNFT: "./images/bannerIMG/redCap.png",
-         nameNFT: "Red Cap",
-         imgOwner:
-            "https://i.pinimg.com/236x/54/26/7a/54267af70300dc246475a073d037c93a.jpg",
-         nameOwner: "Lykie",
-         type: "Gorilla",
-         price: "12.7",
-         isVideo: true,
-      },
-   ];
+   const fetchNFTs = () => {
+      let nftUrl = `https://api.shyft.to/sol/v1/marketplace/active_listings?network=${Network.Devnet}&marketplace_address=${process.env.NEXT_PUBLIC_ADDRESS_MARKETPLACE}`;
+      axios({
+         url: nftUrl,
+         method: "GET",
+         headers: {
+            "Content-Type": "application/json",
+            "x-api-key": process.env.NEXT_PUBLIC_API_KEY,
+         },
+      })
+         .then((res: any) => {
+            console.log(res.data.result);
+            const nft = new Array();
+            res.data.result.forEach(async (event: any) => {
+               const tx = await axios.get(event.nft.metadata_uri).then((e) => {
+                  const dataNFT = {
+                     addressID: event.nft_address,
+                     name: e.data.name,
+                     type: e.data.attributes[0].type,
+                     description: e.data.description,
+                     img: e.data.image,
+                     owner: event.nft.owner,
+                     supply: e.data.attributes[0].supply,
+                     seller: event.seller_address,
+                     price: event.price,
+                     list_state: event.list_state,
+                  };
+                  nft.push(dataNFT);
+                  listAddressID.push(event.nft_address)
+               });
+            });
+            dispatch(getNFTMarket(nft));
+            dispatch(getAddressID(listAddressID))
+            setNFTs(nft);
+         })
+
+         .catch((err: any) => {
+            console.warn(err);
+         });
+   };
+
+   useEffect(() => {
+      fetchNFTs();
+      // console.log("nft market", nfts);
+   }, []);
 
    return (
       <div
@@ -140,9 +147,17 @@ function Marketplace() {
             </div>
          </div>
          <div className=" w-full flex flex-wrap gap-[50px] justify-center items-center">
-            {nfts.map((e, index) => (
-               <NFTModel key={index} nfts={e} />
-            ))}
+            {
+               loading == true
+               ?
+               <CircularProgress color="success" />
+               :
+               <>
+                  {nfts.map((e: any, index: number) => (
+                     <NFTModel key={index} nfts={e} isSell={false} />
+                  ))}
+               </>
+            }
          </div>
       </div>
    );

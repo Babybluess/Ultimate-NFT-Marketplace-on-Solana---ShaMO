@@ -4,11 +4,13 @@ import { Bounce, ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useRouter } from "next/router";
 import Select from "react-select";
-import { NFTModel } from "@/components";
 import Link from "next/link";
-import createnft from "@/role/createNFT/createnft";
+import { mintNow } from "@/role/createNFT/createnft";
+import { UseDispatch, useDispatch } from "react-redux";
+import { useWallet } from "@solana/wallet-adapter-react";
 
 function index() {
+   const [network, setNetwork] = useState("devnet");
    const [ownerNFT, setOwnerNFT] = useState("");
    const [nameNFT, setNameNFT] = useState("");
    const [urlNFT, setUrlNFT] = useState("");
@@ -17,6 +19,7 @@ function index() {
    const [supplyNFT, setSupplyNFT] = useState("");
    const [descriptionNFT, setDecripstionNFT] = useState("");
    const [isVideo, setIsVideo] = useState(false);
+   const { publicKey } = useWallet()
 
    const typeOptions = [
       { value: "Art", label: "Art" },
@@ -32,6 +35,7 @@ function index() {
       router.back();
    };
 
+   //Update Image
    const updateURL = (e: any) => {
       const image = e.target.files[0];
       const nImage = URL.createObjectURL(e.target.files[0]);
@@ -39,38 +43,32 @@ function index() {
       setUrlNFT(nImage);
    };
 
-
    // Function to create NFT
-   const createNFT = () => {
-      createnft(ownerNFT, nameNFT, descriptionNFT, urlNFTLocation)
-      toast.success("🦄 It is successfull NFT Minting!", {
-         position: "top-right",
-         autoClose: 5000,
-         hideProgressBar: false,
-         closeOnClick: true,
-         pauseOnHover: true,
-         draggable: true,
-         progress: undefined,
-         theme: "dark",
-         transition: Bounce,
-      });
+   const createNFT = async () => {
+      mintNow(
+         network,
+         ownerNFT,
+         nameNFT,
+         descriptionNFT,
+         urlNFTLocation,
+         typeNFT,
+         supplyNFT,
+      );
+
+      setTimeout(() => {
+         toast.success("🦄 It is successfull Created NFT!", {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "dark",
+            transition: Bounce,
+         });
+      }, 15000);
    };
-
-   const nftDefault = [
-      {
-         id: 0,
-         imgNFT: urlNFT,
-         nameNFT: nameNFT,
-         imgOwner:
-            "https://i.pinimg.com/236x/54/26/7a/54267af70300dc246475a073d037c93a.jpg",
-         nameOwner: "",
-         type: typeNFT,
-         price: "0.0",
-         isVideo: false,
-      },
-   ];
-
-   console.log(nameNFT, typeNFT, supplyNFT, descriptionNFT);
 
    return (
       <div className="w-full min-h-full flex flex-col justify-center items-center gap-16 py-5 bg-black">
@@ -192,6 +190,7 @@ function index() {
             </section>
             {/* Preview */}
             <section className=" w-[550px] h-[600px] max-sm:w-[450px] rounded-md flex flex-col gap-5 justify-center items-center shadow-inner shadow-indigo-300">
+               <p className=" text-3xl text-white font-semibold">Preview NFT</p>
                <div className="w-[55%] shadow-inner shadow-indigo-500 flex flex-col justify-center items-center border-2 border-[#5B3BA8] rounded-md bg-[#28262F] relative ">
                   <div className=" w-[30%] text-center absolute left-0 top-0 z-40 text-white font-medium rounded-br-xl bg-[#5C3CA8]">
                      <p>{typeNFT}</p>
@@ -227,19 +226,19 @@ function index() {
                               src={"./images/bannerIMG/PAP.png"}
                            />
                         </div>
-                        <p>PXuusn</p>
+                        <p>{`${publicKey?.toBase58().substring(0, 6)}...${publicKey?.toBase58().substring(36)}`}</p>
                      </div>
                      <p className=" text-gray-500 font-medium">Price for Sell:</p>
                      <div className=" w-full flex justify-between items-center">
                         <div className=" flex w-full gap-1">
                            <div className=" w-5 h-5">
-                              <img src="./images/sponsorIMG/ethereum.png" />
+                              <img src="https://ivory-necessary-cougar-154.mypinata.cloud/ipfs/QmZ4johkpM7eUzowgCFjMdWExMbzUZDnf5GPYfUCWSG1xk" />
                            </div>
                            <p>0.0</p>
                         </div>
                         <Link
                            href={{ pathname: `/nftDetail/${nameNFT}` }}
-                           className=" w-[90%] p-1 bg-[#593F9F] rounded-tr-xl rounded-bl-xl "
+                           className=" w-[90%] p-1 bg-[#593F9F] rounded-tr-xl text-center rounded-bl-xl "
                         >
                            See Detail &#8594;
                         </Link>

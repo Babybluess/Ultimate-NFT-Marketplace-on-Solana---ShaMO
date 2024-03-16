@@ -1,12 +1,36 @@
 import React, { useState } from "react";
+import airdropDevnet from '@/role/airdrop/airdrop'
+import { Bounce, ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function Airdrop() {
     const [ isOpen, setOpen] = useState(false)
     const [amount, setAmount] = useState(0)
+    const [network, setNetwork] = useState("devnet")
+    const [address, setAddress] = useState()
 
     const getAmount = (e: number) => {
       setAmount(e)
       setOpen(false)
+    }
+
+
+    const airdropButton = () => {
+      airdropDevnet(network, address)
+
+      setTimeout(() => {
+         toast.success("🦄 Airdrop successfully!", {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "dark",
+            transition: Bounce,
+         });
+      }, 10000);
     }
 
    return (
@@ -22,7 +46,7 @@ function Airdrop() {
                <h3 className="text-2xl font-semibold leading-none tracking-tight">
                   <div className="flex items-center justify-between gap-3">
                      <span>Request Airdrop</span>
-                     <select className="w-min bg-transparent text-sm border-[1px] border-white p-1 rounded-xl hover:bg-[#2C282F]">
+                     <select value={network} className="w-min bg-transparent text-sm border-[1px] border-white p-1 rounded-xl hover:bg-[#2C282F]">
                         <option className=" bg-white" value="devnet" selected>
                            devnet
                         </option>
@@ -33,12 +57,13 @@ function Airdrop() {
                   </div>
                </h3>
                <p className="text-sm text-muted-foreground">
-                  Maximum of 2 requests per hour
+                  Maximum of 1 requests per hour
                </p>
             </div>
             <div className="p-6 pt-0 flex flex-row space-x-2 relative">
                <input
-                  className=" w-[80%] px-2 bg-transparent border-[1px] border-white rounded-lg placeholder:text-gray-300"
+                  onChange={(e:any) => setAddress(e.target.value)}
+                  className=" w-[80%] px-2 bg-transparent border-[1px] border-white text-white rounded-lg placeholder:text-gray-300"
                   type="text"
                   placeholder="Wallet Address"
                   required
@@ -73,8 +98,7 @@ function Airdrop() {
                <section className="flex w-full bg-[#8e489f] justify-center items-center gap-3 rounded-xl cursor-pointer">
                   <button
                      className=" w-[60%] cursor-pointer whitespace-nowrap inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
-                     type="submit"
-                     disabled
+                     onClick={() => airdropButton()}
                   >
                      <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -98,6 +122,20 @@ function Airdrop() {
                </section>
             </div>
          </div>
+         <ToastContainer
+            position="top-right"
+            autoClose={5000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="dark"
+            transition={Bounce}
+            className={" z-30"}
+         />
       </div>
    );
 }
