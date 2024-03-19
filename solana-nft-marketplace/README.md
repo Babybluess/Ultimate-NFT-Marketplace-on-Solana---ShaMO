@@ -2,8 +2,8 @@
 
 1. NFT Generating
 
-![alt text](image.png)
+![alt text](demo_pics/nft.png)
 
 2. AI Consultancy
 
-![alt text](image-1.png)
+![alt text](demo_pics/consultancy.png)
