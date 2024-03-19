@@ -9,10 +9,11 @@ function NFTgeneration(prompt) {
             authorization: `Bearer ${api_key}`,
         },
         data: {
-            providers: "replicate",
+            providers: "replicate", //stabilityai
             text: prompt,
-            resolution: "512x512",
+            resolution: "512x512", // change to 1024 if using stabilityai because it only supports 1024
             fallback_providers: "",
+            num_images: 1 // replicate only supports generating 1 images but stability can generate 3
         },
     };
 
@@ -20,8 +21,9 @@ function NFTgeneration(prompt) {
         .request(options)
         .then((response) => {
             console.log(response);
-            const imageUrl = response.data?.replicate?.items?.[0]?.image_resource_url;
-            return imageUrl;
+            const imageUrls = response.data?.replicate?.items?.map(item => item.image_resource_url);
+            // const imageUrls = response.data?.stability?.items?.map(item => item.image_resource_url);
+            return imageUrls;
         })
         .catch((error) => {
             console.error(error);

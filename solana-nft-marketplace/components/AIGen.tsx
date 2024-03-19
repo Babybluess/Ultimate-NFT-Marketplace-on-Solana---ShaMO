@@ -22,7 +22,13 @@ function AIGen() {
     const [open, setOpen] = useState(false);
     const [imgSelected, setImgSelected] = useState("");
     const [inputPrompt, setInputPrompt] = useState("");
-    //const [imageUrl, setImageUrl] = useState("");
+    const [AIUrls, setAIUrls] = useState<string[]>([]);
+
+    const imageList = [
+        "./images/bannerIMG/PAP.png",
+        "./images/bannerIMG/darkMonkey.png",
+        "./images/bannerIMG/102-EVOL-Chux.png",
+    ]
 
     const openClick = (e:string) => {
         setImgSelected(e)
@@ -36,33 +42,13 @@ function AIGen() {
     const handleGenerate = async () => {
         if (inputPrompt.trim() !== "") {
             try {
-                const AIUrl = await NFTgeneration(inputPrompt);
-                console.log(AIUrl);
-                // setImageUrl(AIUrl);
-
-                const imageElement = document.createElement('img')
-                imageElement.setAttribute('src', AIUrl)
-                imageElement.setAttribute('alt', inputPrompt)
-
-                const imageContainer = document.querySelector('#AINFT')
-                if (imageContainer) {
-                    imageContainer.innerHTML = ''
-                    imageContainer.appendChild(imageElement)
-                } else {
-                    console.error('Image container not found')
-                }
-
+                const urls = await NFTgeneration(inputPrompt);
+                setAIUrls(urls);
             } catch (error) {
                 console.error("Error generating image:", error);
             }
         }
     }
-
-    const imageList = [
-        "./images/bannerIMG/PAP.png",
-        "./images/bannerIMG/darkMonkey.png",
-        "./images/bannerIMG/102-EVOL-Chux.png",
-    ]
 
   return (
     <div id='ImgGen' className=' w-full z-30 flex flex-col gap-5 justify-center items-center text-white px-10 py-5 border-x-4 border-[#F7F7F9]'>
@@ -76,7 +62,7 @@ function AIGen() {
         </div>
         <div className=' flex gap-5'>
             {
-                imageList.map((e, index) => (
+                imageList.concat(AIUrls).map((e, index) => (
                     <div key={index}>
                         <div  onClick={() => openClick(e)} className=' w-[10vw] h-[20vh] border-2 border-green-400 rounded-lg cursor-pointer' key={index}>
                             <img className=' h-full w-full rounded-lg object-cover' src={e} alt="" />
@@ -122,9 +108,7 @@ function AIGen() {
                 ))
             }
           </div>
-          
-          {/* NFT AI generated goes here */}
-          <div id="AINFT"></div>
+
     </div>
   )
 }
