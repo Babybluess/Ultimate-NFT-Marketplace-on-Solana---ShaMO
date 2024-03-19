@@ -1,7 +1,33 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
+import AIConsultancy from "@/role/AIConsultancy/AIConsultancy";
 
 function AISupport() {
+
+    const [inputPrompt, setInputPrompt] = useState("");
+
+    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setInputPrompt(event.target.value);
+    };
+
+    const handleGenerate = async () => {
+        if (inputPrompt.trim() !== "") {
+            try {
+                const consultancy = await AIConsultancy(inputPrompt);
+                console.log(consultancy);
+
+                const AIText = document.querySelector("#AIResponse")
+                if (AIText) {
+                    AIText.innerHTML = consultancy
+                } else {
+                    console.error('AI Text Container not found')
+                }
+            } catch (error) {
+                console.error("Error generating text:", error);
+            }
+        }
+    }
+
    return (
       <div id="AIConsultancy" className=" w-full justify-center items-center flex flex-col gap-10 border-x-4 border-[#F7F7F9] z-30 text-white px-10 py-5">
          <div className=" w-full flex-col flex gap-2 text-white">
@@ -17,6 +43,8 @@ function AISupport() {
                   className=" w-[70%] px-2 bg-transparent border-[1px] border-white rounded-lg placeholder:text-gray-300"
                   type="text"
                   placeholder="What do you need?"
+                  value = { inputPrompt }
+                  onChange={handleInputChange}
                   required
                />
                <button
@@ -26,6 +54,7 @@ function AISupport() {
                   aria-expanded="false"
                   aria-controls="radix-:Rl6ula:"
                   data-state="closed"
+                  onClick={handleGenerate}
                >
                   Send Messages
                </button>
@@ -34,7 +63,7 @@ function AISupport() {
                <p>Answer the Questions:</p>
                <article className=" w-full min-h-[20vh] break-words bg-transparent border-[1px] border-white rounded-lg placeholder:text-gray-300 p-2">
 {/* Put AI answer the question */}
-                  <p></p>
+                  <p id="AIResponse"></p>
                </article>
             </div>
          </div>

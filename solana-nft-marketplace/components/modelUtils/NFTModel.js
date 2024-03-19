@@ -9,10 +9,12 @@ import "react-toastify/dist/ReactToastify.css";
 import { useRouter } from "next/router";
 import unlistNFT from "@/role/unlistNFT/unlistNFT";
 import { useSelector } from "react-redux";
+//import { requestLoan } from "@/role/requestLoan/requestLoan";
 
 function NFTModel(props) {
    const [nft, setNFT] = useState(props.nfts);
    const [isSell, setSell] = useState(props.isSell);
+   const [collateral, setCollateral] = useState(props.collateral);
    const [price, setPrice] = useState(0);
    const [balance, setBalance] = useState();
    const router = useRouter();
@@ -69,7 +71,7 @@ function NFTModel(props) {
    useEffect(() => {
       if (publicKey !== null) {
          setAddress(publicKey.toBase58());
-      }
+       }
    }, [addressWallet]);
 
    console.log("var", nftMarketList.includes(nft.addressID));
@@ -156,7 +158,7 @@ function NFTModel(props) {
                         </Link>
                      )}
                   </>
-               )}
+                   )}
             </div>
          </div>
          <ToastContainer

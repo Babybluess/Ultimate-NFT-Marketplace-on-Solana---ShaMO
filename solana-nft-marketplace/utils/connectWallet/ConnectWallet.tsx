@@ -6,9 +6,17 @@ const WalletMultiButtonDynamic = dynamic(
    { ssr: false }
 );
 
+const Disconnectbutton = dynamic(
+    async () => (await import('@solana/wallet-adapter-react-ui')).WalletDisconnectButton,
+    { ssr: false }
+);
+
 export const ConnectWallet = () => {
-  return (
-    <WalletMultiButtonDynamic/>
+    return (
+        <>
+            <WalletMultiButtonDynamic />
+            <Disconnectbutton />
+        </>
   )
 }
 

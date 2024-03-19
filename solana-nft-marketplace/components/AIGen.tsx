@@ -4,6 +4,7 @@ import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Modal from '@mui/material/Modal';
 import CardMedia from '@mui/material/CardMedia';
+import NFTgeneration from "@/role/NFTgeneration/NFTgeneration";
 
 const style = {
     position: 'absolute' as 'absolute',
@@ -16,14 +17,45 @@ const style = {
     boxShadow: 24,
     p: 4,
   };
-
+    
 function AIGen() {
     const [open, setOpen] = useState(false);
-    const [imgSelected, setImgSelected] = useState("")
+    const [imgSelected, setImgSelected] = useState("");
+    const [inputPrompt, setInputPrompt] = useState("");
+    //const [imageUrl, setImageUrl] = useState("");
 
     const openClick = (e:string) => {
         setImgSelected(e)
         setOpen(true)
+    }
+
+    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setInputPrompt(event.target.value);
+    };
+
+    const handleGenerate = async () => {
+        if (inputPrompt.trim() !== "") {
+            try {
+                const AIUrl = await NFTgeneration(inputPrompt);
+                console.log(AIUrl);
+                // setImageUrl(AIUrl);
+
+                const imageElement = document.createElement('img')
+                imageElement.setAttribute('src', AIUrl)
+                imageElement.setAttribute('alt', inputPrompt)
+
+                const imageContainer = document.querySelector('#AINFT')
+                if (imageContainer) {
+                    imageContainer.innerHTML = ''
+                    imageContainer.appendChild(imageElement)
+                } else {
+                    console.error('Image container not found')
+                }
+
+            } catch (error) {
+                console.error("Error generating image:", error);
+            }
+        }
     }
 
     const imageList = [
@@ -39,8 +71,8 @@ function AIGen() {
             <p className=' text-fuchsia-600'>Create <span className=' text-white bg-gradient-to-r from-[#BE409E] to-[#1B8D87] rounded-lg p-1'>Powerful</span> AI Art or Image in seconds</p>
         </div>
         <div className=' w-full justify-center items-center flex gap-5'>
-            <input className=' w-[60%] p-5 rounded-xl bg-slate-900 shadow-inner shadow-violet-500 ' placeholder='What do you want to generate?'/>
-            <button className=' p-5 bg-[#DF5C16] rounded-xl'>Generate</button>
+              <input className=' w-[60%] p-5 rounded-xl bg-slate-900 shadow-inner shadow-violet-500 ' placeholder='What do you want to generate?' value={ inputPrompt } onChange={handleInputChange}/>
+            <button className=' p-5 bg-[#DF5C16] rounded-xl' onClick={handleGenerate}>Generate</button>
         </div>
         <div className=' flex gap-5'>
             {
@@ -89,7 +121,10 @@ function AIGen() {
                     </div>
                 ))
             }
-        </div>
+          </div>
+          
+          {/* NFT AI generated goes here */}
+          <div id="AINFT"></div>
     </div>
   )
 }
