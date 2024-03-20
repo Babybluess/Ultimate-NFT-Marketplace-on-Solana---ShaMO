@@ -1,16 +1,87 @@
-import React, { useState, useRef } from "react";
-
+import React, { useState, useRef, useEffect } from "react";
+import { useWallet } from "@solana/wallet-adapter-react";
+import axios from "axios";
 function UpdatedIMG({ name }) {
-   const [url, setUrl] = useState("");
+   const [img, setImg] = useState("");
    const [isUpload, setUpload] = useState(false);
    const inputRef = useRef(null)
+   const {publicKey} = useWallet();
+   const walletAddress = publicKey ?? publicKey.toBase58();
+   async function fetchData(walletAddress) {
+      try {
+        const config = {
+          method: 'get',
+          maxBodyLength: Infinity,
+          url: `http://localhost:3000/api/user?walletAddress=${walletAddress}`,
+          headers: {}
+        };
+    
+        const response = await axios.request(config);
+        return response.data;
+      } catch (error) {
+        throw error;
+      }
+   }
 
-   const updateURL = (e) => {
-      setUrl(URL.createObjectURL(e.target.files[0]))
-      setUpload(true);
+
+   useEffect(() => {
+      fetchData(walletAddress)
+         .then((data) => {
+            if (name === "Background") {
+               console.log(data[0].bgImg);
+               if (data[0].bgImg !== undefined){
+                  setImg(data[0].bgImg);
+                  setUpload(true);
+               }
+            } else {
+               if (data[0].avtImg !== undefined){
+                  setImg(data[0].avtImg);
+                  setUpload(true);
+               }
+            }
+         })
+         .catch((error) => {
+            console.error(error);
+  });
+   console.log(isUpload);
+   },[])
+
+   async function updateData(walletAddress, dataToUpdate) {
+      try {
+          const config = {
+              method: 'put',
+              maxBodyLength: Infinity,
+              url: `http://localhost:3000/api/user`,
+              headers: {},
+              data: JSON.stringify({
+                  walletAddress,
+                  ...dataToUpdate // Spread the dataToUpdate object to include either bgImg or avtImg
+              })
+          };
+  
+          const response = await axios.request(config);
+          return response.data;
+      } catch (error) {
+          throw error;
+      }
+  }
+
+   const updateImg = (e) => {
+      if(name == "Background") {
+         const urlImg = "example url"; // modify url image here
+         setImg(urlImg);
+         setUpload(true);
+         updateData(walletAddress,{ bgImg: urlImg});
+         
+      } else {
+         const urlImg = "https://www.jquery-az.com/html/images/banana.jpg"; // modify url image here
+         setImg(urlImg);
+         setUpload(true);
+         updateData(walletAddress,{avtImg: urlImg});
+         
+      }
+      
    };
-
-   console.log(url)
 
    return (
       <>
@@ -20,7 +91,7 @@ function UpdatedIMG({ name }) {
             >
                <div className=" w-full justify-center flex items-center">
                   <input
-                     onChange={(e) => updateURL(e)}
+                     onChange={(e) => updateImg(e)}
                      type="file"
                      className={` ${name == "Background" ? "w-[10%]" : "w-[80%]"} text-white`}
                   ></input>
@@ -39,16 +110,16 @@ function UpdatedIMG({ name }) {
             </div>
          ) : (
             <>
-               {name == "Background" && url ? (
+               {name == "Background" && img ? (
                   <img
-                     src={url}
+                     src={img}
                      alt=""
                      className="w-full h-[90%] bg-no-repeat bg-center object-cover"
                   />
                ) : (
                   <div className="w-[20%] max-lg:w-[30%] max-md:w-[40%] max-sm:w-[50%] h-full rounded-lg border-[5px] border-[#2FAEAC]">
                      <img
-                        src={url}
+                        src={img}
                         alt=""
                         className={`${name == "Background" ? "w-full h-full bg-no-repeat bg-center object-cover" : "object-cover h-full w-full rounded-sm"}`}
                      />
