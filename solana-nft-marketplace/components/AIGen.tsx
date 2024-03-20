@@ -23,6 +23,7 @@ function AIGen() {
     const [imgSelected, setImgSelected] = useState("");
     const [inputPrompt, setInputPrompt] = useState("");
     const [AIUrls, setAIUrls] = useState<string[]>([]);
+    const [isGenerating, setIsGenerating] = useState(false);
 
     const imageList = [
         "./images/bannerIMG/PAP.png",
@@ -40,12 +41,16 @@ function AIGen() {
     };
 
     const handleGenerate = async () => {
+
         if (inputPrompt.trim() !== "") {
             try {
+                setIsGenerating(true);
                 const urls = await NFTgeneration(inputPrompt);
                 setAIUrls(urls);
             } catch (error) {
                 console.error("Error generating image:", error);
+            } finally {
+                setIsGenerating(false);
             }
         }
     }
@@ -58,7 +63,11 @@ function AIGen() {
         </div>
         <div className=' w-full justify-center items-center flex gap-5'>
               <input className=' w-[60%] p-5 rounded-xl bg-slate-900 shadow-inner shadow-violet-500 ' placeholder='What do you want to generate?' value={ inputPrompt } onChange={handleInputChange}/>
-            <button className=' p-5 bg-[#DF5C16] rounded-xl' onClick={handleGenerate}>Generate</button>
+              <button
+                  className={`p-5 bg-[#DF5C16] rounded-xl 
+                  ${isGenerating ? 'bg-gray-400 cursor-not-allowed' : ''}`}
+                  onClick={handleGenerate}
+                  disabled={isGenerating}>Generate</button>
         </div>
         <div className=' flex gap-5'>
             {

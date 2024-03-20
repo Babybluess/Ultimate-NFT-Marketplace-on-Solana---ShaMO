@@ -5,14 +5,17 @@ import AIConsultancy from "@/role/AIConsultancy/AIConsultancy";
 function AISupport() {
 
     const [inputPrompt, setInputPrompt] = useState("");
+    const [isGenerating, setIsGenerating] = useState(false);
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setInputPrompt(event.target.value);
     };
 
     const handleGenerate = async () => {
+        
         if (inputPrompt.trim() !== "") {
             try {
+                setIsGenerating(true);
                 const consultancy = await AIConsultancy(inputPrompt);
                 console.log(consultancy);
 
@@ -24,6 +27,8 @@ function AISupport() {
                 }
             } catch (error) {
                 console.error("Error generating text:", error);
+            } finally {
+                setIsGenerating(false);
             }
         }
     }
@@ -48,13 +53,15 @@ function AISupport() {
                   required
                />
                <button
-                  className="cursor-pointer hover:bg-[#2C282F] text-white whitespace-nowrap inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2 w-[30%]"
+                  className={`cursor-pointer hover:bg-[#2C282F] text-white whitespace-nowrap inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2 w-[30%]
+                  ${isGenerating ? 'bg-gray-400 cursor-not-allowed' : ''}`}
                   type="button"
                   aria-haspopup="dialog"
                   aria-expanded="false"
                   aria-controls="radix-:Rl6ula:"
                   data-state="closed"
                   onClick={handleGenerate}
+                  disabled={isGenerating}
                >
                   Send Messages
                </button>

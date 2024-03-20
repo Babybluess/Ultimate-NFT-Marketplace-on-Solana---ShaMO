@@ -14,6 +14,9 @@ function Airdrop() {
       setOpen(false)
     }
 
+    const handleNetworkChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        setNetwork(e.target.value);
+    }
 
     const airdropButton = () => {
       airdropDevnet(network, address)
@@ -46,7 +49,7 @@ function Airdrop() {
                <h3 className="text-2xl font-semibold leading-none tracking-tight">
                   <div className="flex items-center justify-between gap-3">
                      <span>Request Airdrop</span>
-                     <select value={network} className="w-min bg-transparent text-sm border-[1px] border-white p-1 rounded-xl hover:bg-[#2C282F]">
+                     <select value={network} className="w-min bg-transparent text-sm border-[1px] border-white p-1 rounded-xl hover:bg-[#2C282F]" onChange={handleNetworkChange}>
                         <option className=" bg-white" value="devnet" selected>
                            devnet
                         </option>
