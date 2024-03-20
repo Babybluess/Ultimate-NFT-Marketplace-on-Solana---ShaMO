@@ -1,5 +1,5 @@
 const axios = require("axios")
-const api_key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMjUwYWRmNDMtZjM2Ni00MzgyLThkNTctYzBkNzZlNjk0NWM3IiwidHlwZSI6ImFwaV90b2tlbiJ9.4mnOPF1RpkTVIh8pLSgUyRBmPkMRv_GlUfk9-QaxuLU"
+const api_key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiOTFlMGNmMWQtYTNjMi00ZThkLTlhZTItNWZkOTJkZDgzODJlIiwidHlwZSI6ImFwaV90b2tlbiJ9.zgcwic78X0b6K6DKLf-iRgJOFiIJglgAGtv3CwLsh2I"
 
 function NFTgeneration(prompt) {
     const options = {
@@ -9,11 +9,11 @@ function NFTgeneration(prompt) {
             authorization: `Bearer ${api_key}`,
         },
         data: {
-            providers: "replicate", //stabilityai
+            providers: "amazon",
             text: prompt,
-            resolution: "512x512", // change to 1024 if using stabilityai because it only supports 1024
+            resolution: "512x512",
             fallback_providers: "",
-            num_images: 1 // replicate only supports generating 1 images but stability can generate 3
+            num_images: 3
         },
     };
 
@@ -21,8 +21,8 @@ function NFTgeneration(prompt) {
         .request(options)
         .then((response) => {
             console.log(response);
-            const imageUrls = response.data?.replicate?.items?.map(item => item.image_resource_url);
-            // const imageUrls = response.data?.stability?.items?.map(item => item.image_resource_url);
+            // const imageUrls = response.data?.replicate?.items?.map(item => item.image_resource_url);
+            const imageUrls = response.data?.amazon?.items?.map(item => item.image_resource_url);
             return imageUrls;
         })
         .catch((error) => {
