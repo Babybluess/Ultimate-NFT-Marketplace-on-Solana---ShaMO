@@ -1,3 +1,4 @@
+"use client";
 import React, { useEffect, useState } from "react";
 import acceptBid from "@/role/bidNFT/acceptBid";
 import { Network } from "@shyft-to/js";
@@ -5,17 +6,20 @@ import { Bounce, ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useWallet } from "@solana/wallet-adapter-react";
 import cancelBid from "@/role/bidNFT/cancelBid";
+import { getCurrentNFTBorrow } from "@/script/action/vault/vaultAction";
+import { useDispatch } from "react-redux";
 
-function Bidding() {
+function BiddingOnLending() {
    const [nftBid, setNFTBid] = useState<any[]>([]);
    const axios = require("axios");
    const { publicKey } = useWallet();
+   const dispatch = useDispatch()
 
    const biddingList = () => {
       let config = {
          method: "get",
          maxBodyLength: Infinity,
-         url: `https://api.shyft.to/sol/v1/marketplace/active_bids?network=devnet&marketplace_address=${process.env.NEXT_PUBLIC_ADDRESS_MARKETPLACE}&sort_by=bid_date&sort_order=desc`,
+         url: `https://api.shyft.to/sol/v1/marketplace/active_bids?network=devnet&marketplace_address=${process.env.NEXT_PUBLIC_ADDRESS_VAULT}&sort_by=bid_date&sort_order=desc`,
          headers: {
             "x-api-key": process.env.NEXT_PUBLIC_API_KEY,
          },
@@ -51,8 +55,25 @@ function Bidding() {
       console.log("bidding list", nftBid);
    }, []);
 
-   const acceptBidding = (bid_state: string, seller: string) => {
-      acceptBid(Network.Devnet, bid_state, seller, process.env.NEXT_PUBLIC_ADDRESS_MARKETPLACE);
+   const acceptBidding = (bid_state: string, lender: string, price:number, nftAddress: string, borrower: string) => {
+      acceptBid(Network.Devnet, bid_state, lender, process.env.NEXT_PUBLIC_ADDRESS_VAULT);
+
+      if (publicKey !== null) {
+          
+          const currentNFT = {
+           addressID: nftAddress,
+           lenderNFT: lender,
+           borrowerNFT:borrower,
+           priceNFT: price,
+        //    timeBorrowNFT: timeBorrow, 
+           expirationNFT: process.env.NEXT_PUBLIC_EXPIRATION,
+        //    stakeValue: stakeValue,
+           isRevert: false ,
+           isRecover: false
+        }
+  
+        dispatch(getCurrentNFTBorrow(currentNFT))
+      }
 
       setTimeout(() => {
          toast.success("🦄 Accept Bid NFT Successfully!", {
@@ -69,8 +90,13 @@ function Bidding() {
       }, 15000);
    };
 
-   const cancelBidding = (bid_state: string, buyer: string) => {
-      cancelBid(Network.Devnet, bid_state, buyer, process.env.NEXT_PUBLIC_ADDRESS_MARKETPLACE);
+   const cancelBidding = (bid_state: string, borrower: string) => {
+      cancelBid(
+         Network.Devnet,
+         bid_state,
+         borrower,
+         process.env.NEXT_PUBLIC_ADDRESS_VAULT,
+      );
 
       setTimeout(() => {
          toast.success("🦄 Cancel Bid NFT Successfully!", {
@@ -89,24 +115,27 @@ function Bidding() {
 
    return (
       <div className=" w-full z-30 flex flex-col gap-5 items-center text-white px-10 py-5 border-x-4 border-[#F7F7F9]">
-         <p className=" text-4xl font-semibold">Bidding&Offering NFT</p>
+         <p className=" text-4xl font-semibold">Bidding&Offering NFT on Lending</p>
          <table className="table-auto border-white ">
             <thead className="border-b text-xl font-medium dark:border-neutral-500">
                <tr>
                   <th scope="col" className="px-8 py-4">
                      Image
                   </th>
-                  <th scope="col" className=" px-16 py-4">
+                  <th scope="col" className=" px-10 py-4">
                      Name
                   </th>
-                  <th scope="col" className=" px-16 py-4">
-                     Seller
+                  <th scope="col" className=" px-10 py-4">
+                     Lender
                   </th>
                   <th scope="col" className="px-16 py-4">
-                     Buyer
+                     Borrower
+                  </th>
+                  <th scope="col" className="px-2 py-4">
+                     EPrice
                   </th>
                   <th scope="col" className="px-6 py-4">
-                     Price
+                     Expiration
                   </th>
                   <th scope="col" className="px-6 py-4">
                      Accept
@@ -128,22 +157,25 @@ function Bidding() {
                            src={item.img}
                         />
                      </td>
-                     <td className="whitespace-nowrap px-16 py-4 text-center">
+                     <td className="whitespace-nowrap px-10 py-4 text-center">
                         {item.name}
                      </td>
-                     <td className="whitespace-nowrap px-16 py-4 text-center">
+                     <td className="whitespace-nowrap px-10 py-4 text-center">
                         {`${item.seller.substring(0, 6)}...${item.seller.substring(38)}`}
                      </td>
                      <td className="whitespace-nowrap px-16 py-4 text-center">
                         {`${item.buyer.substring(0, 6)}...${item.buyer.substring(38)}`}
                      </td>
-                     <td className="whitespace-nowrap px-6 py-4 text-center">
+                     <td className="whitespace-nowrap px-2 py-4 text-center">
                         {item.price}
+                     </td>
+                     <td className="whitespace-nowrap px-6 py-4 text-center">
+                        {process.env.NEXT_PUBLIC_EXPIRATION}
                      </td>
                      <td className="whitespace-nowrap px-6 py-4 text-center">
                         {item.seller == publicKey?.toBase58() ? (
                            <button
-                              onClick={() => acceptBidding(item.bid_state, item.seller)}
+                              onClick={() => acceptBidding(item.bid_state, item.seller, item.price, item.addressID, item.buyer)}
                               className="px-2 py-1 bg-green-600 rounded-xl"
                            >
                               Accept Offer
@@ -185,4 +217,4 @@ function Bidding() {
    );
 }
 
-export default Bidding;
+export default BiddingOnLending;

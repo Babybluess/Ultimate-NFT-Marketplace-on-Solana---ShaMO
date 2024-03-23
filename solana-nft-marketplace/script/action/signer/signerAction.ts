@@ -11,4 +11,10 @@ export const updateNFTs = (nfts: any[]) => (
         nfts_Signer: nfts
     }
 )
+export const updateNFTBorrow = (nfts: any[]) => (
+    {
+        type : "UPDATENFTBORROW",
+        nfts_Signer: nfts
+    }
+)
 

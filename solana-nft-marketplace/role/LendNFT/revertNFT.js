@@ -5,21 +5,22 @@ const callback = (signature, result) => {
    console.log("result ", result);
 };
 
-export const sellNFT = (network, nftAddress, price, seller) => {
+export const revertNFT = (network, nftAddress, lender, borrower) => {
    const axios = require("axios");
-
+   console.log(lender);
    let data = JSON.stringify({
       network: "devnet",
-      marketplace_address: process.env.NEXT_PUBLIC_ADDRESS_MARKETPLACE,
-      nft_address: nftAddress,
-      price: price,
-      seller_wallet: seller,
+      token_address: nftAddress,
+      from_address: borrower,
+      to_address: lender,
+      transfer_authority: true,
+      fee_payer: borrower,
    });
 
    let config = {
       method: "post",
       maxBodyLength: Infinity,
-      url: "https://api.shyft.to/sol/v1/marketplace/list",
+      url: "https://api.shyft.to/sol/v1/nft/transfer_detach",
       headers: {
          "Content-Type": "application/json",
          "x-api-key": process.env.NEXT_PUBLIC_API_KEY,

@@ -5,12 +5,12 @@ const callback = (signature, result) => {
   console.log("result ", result);
 };
 
-function acceptBid(network, bid_state, seller) {
+function acceptBid(network, bid_state, seller, marketNFT) {
   const axios = require('axios');
    
    let data = JSON.stringify({
      "network": network,
-     "marketplace_address": process.env.NEXT_PUBLIC_ADDRESS_MARKETPLACE,
+     "marketplace_address": marketNFT,
      "bid_state": bid_state,
      "seller_wallet": seller
    });

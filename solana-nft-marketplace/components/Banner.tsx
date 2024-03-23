@@ -56,6 +56,7 @@ function Banner() {
            },
          })
            .then((res:any) => {
+            console.log(res.data.result)
             res.data.result.forEach(async(event:any) => {
                const tx = await axios.get(event.metadata_uri).then(e => {
                   const dataNFT = {
@@ -65,7 +66,8 @@ function Banner() {
                      description: e.data.description,
                      img: e.data.image,
                      owner: event.owner,
-                     supply: e.data.attributes[0].supply
+                     supply: e.data.attributes[0].supply,
+                     attributes: e.data.attributes[0]
                   }
                   nfts.push(dataNFT)
                })
