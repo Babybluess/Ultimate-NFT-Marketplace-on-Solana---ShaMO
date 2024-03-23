@@ -102,14 +102,23 @@ function AIGen() {
                                             display: "flex",
                                         }}
                                     >
-                                        <Card sx={{ maxWidth: 20, cursor: "pointer"}}>
-                                        <CardMedia
-                                            component="img"
-                                            height="10"
-                                            image="./images/icons/download.png"
-                                            alt="download"
-                                        />
-                                    </Card>  
+                                    <Box
+                                        sx={{
+                                        position: 'absolute' as 'absolute',
+                                        top: '10%',
+                                        right: '10%',
+                                        width: 30,
+                                        height: 30,
+                                        borderRadius: 1,
+                                        justifyContent: "center",
+                                        alignItems: "center",
+                                        display: "flex",
+                                        }}
+                                    >
+                                        <a href={imgSelected} download>
+                                        <img src="./images/icons/download.png" alt="Download" />
+                                        </a>
+                                    </Box>
                                     </Box>
                                 </Box>
                             </Modal>
