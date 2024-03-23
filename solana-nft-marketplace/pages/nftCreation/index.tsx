@@ -232,7 +232,7 @@ function index() {
                      <div className=" w-full flex justify-between items-center">
                         <div className=" flex w-full gap-1">
                            <div className=" w-5 h-5">
-                              <img src="https://ivory-necessary-cougar-154.mypinata.cloud/ipfs/QmZ4johkpM7eUzowgCFjMdWExMbzUZDnf5GPYfUCWSG1xk" />
+                              <img src="../../images/sponsorIMG/solana.png" />
                            </div>
                            <p>0.0</p>
                         </div>

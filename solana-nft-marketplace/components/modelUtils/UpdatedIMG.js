@@ -1,20 +1,100 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
+import { useWallet } from "@solana/wallet-adapter-react";
+import axios from "axios";
+// import pinToFiles from '@/utils/pinningData/pinata'
 
 function UpdatedIMG({ name }) {
    const [url, setUrl] = useState("");
    const [isUpload, setUpload] = useState(false);
-   const inputRef = useRef(null)
-
-   const updateURL = (e) => {
+   const [img, setImg] = useState("");
+   
+   const updateURL = async(e) => {
       setUrl(URL.createObjectURL(e.target.files[0]))
+      // const imgURL = await pinToFiles(e.target.files[0])
+      // console.log("img" , imgURL)
       setUpload(true);
    };
 
-   console.log(url)
+   const {publicKey} = useWallet();
+   const walletAddress = publicKey ?? publicKey.toBase58();
+   async function fetchData(walletAddress) {
+      try {
+        const config = {
+          method: 'get',
+          maxBodyLength: Infinity,
+          url: `http://localhost:3000/api/user?walletAddress=${walletAddress}`,
+          headers: {}
+        };
+
+        const response = await axios.request(config);
+        return response.data;
+      } catch (error) {
+        throw error;
+      }
+   }
+
+   useEffect(() => {
+      fetchData(walletAddress)
+         .then((data) => {
+            if (name === "Background") {
+               console.log(data[0].bgImg);
+               if (data[0].bgImg !== undefined){
+                  setImg(data[0].bgImg);
+                  setUpload(true);
+               }
+            } else {
+               if (data[0].avtImg !== undefined){
+                  setImg(data[0].avtImg);
+                  setUpload(true);
+               }
+            }
+         })
+         .catch((error) => {
+            console.error(error);
+  });
+   console.log(isUpload);
+   },[])
+
+   async function updateData(walletAddress, dataToUpdate) {
+      try {
+          const config = {
+              method: 'put',
+              maxBodyLength: Infinity,
+              url: `http://localhost:3000/api/user`,
+              headers: {},
+              data: JSON.stringify({
+                  walletAddress,
+                  ...dataToUpdate // Spread the dataToUpdate object to include either bgImg or avtImg
+              })
+          };
+
+          const response = await axios.request(config);
+          return response.data;
+      } catch (error) {
+          throw error;
+      }
+  }
+
+   const updateImg = (e) => {
+      if(name == "Background") {
+         const urlImg = "example url"; // modify url image here
+         setImg(urlImg);
+         setUpload(true);
+         updateData(walletAddress,{ bgImg: urlImg});
+
+      } else {
+         const urlImg = "https://www.jquery-az.com/html/images/banana.jpg"; // modify url image here
+         setImg(urlImg);
+         setUpload(true);
+         updateData(walletAddress,{avtImg: urlImg});
+
+      }
+
+   };
 
    return (
       <>
-         {isUpload == false ? (
+         {/* {isUpload == false ? (
             <div
                className={` ${name == "Background" ? "w-full h-[80%]" : "rounded-lg border-[5px] border-[#2FAEAC] w-[20%] max-lg:w-[25%] max-md:w-[35%] max-sm:w-[50%] h-full"} flex flex-col gap-2 bg-gray-800  justify-center items-center`}
             >
@@ -39,23 +119,38 @@ function UpdatedIMG({ name }) {
             </div>
          ) : (
             <>
-               {name == "Background" && url ? (
+               {name == "Background" && img ? (
                   <img
-                     src={url}
+                     src={img}
                      alt=""
                      className="w-full h-[90%] bg-no-repeat bg-center object-cover"
                   />
                ) : (
                   <div className="w-[20%] max-lg:w-[30%] max-md:w-[40%] max-sm:w-[50%] h-full rounded-lg border-[5px] border-[#2FAEAC]">
                      <img
-                        src={url}
+                        src={"https://ivory-necessary-cougar-154.mypinata.cloud/ipfs/QmXpH4idDQ1oq1qAz32YXMU8d4hwFCtEaWhM2gjqXgf6oG"}
                         alt=""
                         className={`${name == "Background" ? "w-full h-full bg-no-repeat bg-center object-cover" : "object-cover h-full w-full rounded-sm"}`}
                      />
                   </div>
                )}
             </>
-         )}
+         )} */}
+         {name == "Background" ? (
+                  <img
+                     src={"../../images/bannerIMG/background.gif"}
+                     alt=""
+                     className="w-full h-[90%] bg-no-repeat bg-center object-cover"
+                  />
+               ) : (
+                  <div className="w-[20%] max-lg:w-[30%] max-md:w-[40%] max-sm:w-[50%] h-full rounded-lg border-[5px] border-[#2FAEAC]">
+                     <img
+                        src={"../../images/bannerIMG/avartar.jpg"}
+                        alt=""
+                        className={`${name == "Background" ? "w-full h-full bg-no-repeat bg-center object-cover" : "object-cover h-full w-full rounded-sm"}`}
+                     />
+                  </div>
+               )}
       </>
    );
 }

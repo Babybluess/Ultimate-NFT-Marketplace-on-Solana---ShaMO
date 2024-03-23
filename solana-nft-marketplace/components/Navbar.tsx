@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import { Link } from 'react-scroll';
 import ConnectWallet from "@/utils/connectWallet/ConnectWallet";
+import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 
 function Navbar() {
 
@@ -21,6 +22,7 @@ function Navbar() {
             </ul>
          </div>
          <ConnectWallet/>
+         {/* <WalletMultiButton/> */}
       </div>
    );
 }

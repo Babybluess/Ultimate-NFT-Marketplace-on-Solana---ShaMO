@@ -1,23 +1,20 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import styled from "styled-components";
-import NFTModel from "./modelUtils/NFTModel";
-import axios from "axios";
-import {  useDispatch, useSelector } from "react-redux";
-import { getNFTMarket } from "@/script/action/marketplace/marketAction";
-import { Network, ShyftSdk } from "@shyft-to/js";
-import { useWallet } from "@solana/wallet-adapter-react";
+import NFTLending from "./modelUtils/NFTLending";
 import { CircularProgress } from "@mui/material";
-import { getAddressID } from "@/script/action/marketplace/marketAction";
+import axios from "axios";
+import styled from "styled-components";
+import { useDispatch, useSelector } from "react-redux";
+import { useWallet } from "@solana/wallet-adapter-react";
+import { getNFTVault, getAddressNFTVault } from "@/script/action/vault/vaultAction";
 
-function Marketplace() {
+function LendingNFT() {
    const [isChoose, setChoose] = useState("");
    const [nfts, setNFTs] = useState<any[]>([]);
    const [loading, isLoading] = useState(false)
    const [listAddressID, setAddressID] = useState<any[]>([])
    const dispatch = useDispatch();
-   const marketNFT = useSelector((state:any) => state.marketReducer.NFTs)
-   const { publicKey } = useWallet()
+   const marketNFT = useSelector((state:any) => state.vaultReducer.NFTs)
 
    const changeNFT = (type: string) => {
       isLoading(true)
@@ -31,9 +28,8 @@ function Marketplace() {
    };
 
    const fetchNFTs = () => {
-      let nftUrl = `https://api.shyft.to/sol/v1/marketplace/active_listings?network=${Network.Devnet}&marketplace_address=${process.env.NEXT_PUBLIC_ADDRESS_MARKETPLACE}`;
       axios({
-         url: nftUrl,
+         url: process.env.NEXT_PUBLIC_VAULT_NFT_LIST,
          method: "GET",
          headers: {
             "Content-Type": "application/json",
@@ -53,7 +49,7 @@ function Marketplace() {
                      img: e.data.image,
                      owner: event.nft.owner,
                      supply: e.data.attributes[0].supply,
-                     seller: event.seller_address,
+                     lender: event.seller_address,
                      price: event.price,
                      list_state: event.list_state,
                   };
@@ -61,8 +57,8 @@ function Marketplace() {
                   listAddressID.push(event.nft_address)
                });
             });
-            dispatch(getNFTMarket(nft));
-            dispatch(getAddressID(listAddressID))
+            dispatch(getNFTVault(nft));
+            dispatch(getAddressNFTVault(listAddressID))
             setNFTs(nft);
          })
 
@@ -77,28 +73,10 @@ function Marketplace() {
 
    return (
       <div
-         id="Marketplace"
+         id="Lending NFT"
          className=" w-full px-10 py-5 border-x-4 border-[#F7F7F9] z-30 flex flex-col gap-10 justify-center items-center text-white"
       >
-         <div className=" w-full flex justify-between">
-            <div className="flex w-[35%] justify-center items-center">
-               <p className=" text-3xl font-bold">POPULAR COLLECTION NFT DIGITAL ART</p>
-               <div className=" w-[150px] h-[100px] justify-start flex items-start animate-pulse">
-                  <img
-                     src="/images/Uranus_Crypto_Card_-_Rarible___OpenSea-removebg-preview.png"
-                     alt=""
-                     className=" object-cover"
-                  />
-               </div>
-            </div>
-            <div className=" w-[30%]">
-               <p className=" py-5 text-gray-300">
-                  We have some of the most popular digital assets that can be recommended
-                  for you, which you also get for your new collection.
-               </p>
-               <button className=" text-violet-500">See detail &#8594;</button>
-            </div>
-         </div>
+         <p className=" text-3xl font-bold">Lending&Borrowing NFT</p>
          <div className=" justify-start flex w-[100%]">
             <div className=" flex gap-5">
                <FilterType
@@ -146,23 +124,22 @@ function Marketplace() {
             </div>
          </div>
          <div className=" w-full flex flex-wrap gap-[50px] justify-center items-center">
-            {
-               loading == true
-               ?
+            {loading == true && nfts !== undefined ? (
                <CircularProgress color="success" />
-               :
+            ) : (
                <>
                   {nfts.map((e: any, index: number) => (
-                     <NFTModel key={index} nfts={e} isSell={false} />
+                     <NFTLending key={index} nfts={e} isList={true} />
                   ))}
                </>
-            }
+            )}
          </div>
       </div>
    );
 }
 
-export default Marketplace;
+export default LendingNFT;
+
 
 const FilterType = styled.div`
    padding: 0.5rem;

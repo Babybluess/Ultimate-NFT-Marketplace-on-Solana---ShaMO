@@ -6,32 +6,35 @@ function TrendingNFT() {
     const trendingNFTList = [
         {
             id: 0,
+            addressID: "CHRISTIAN",
             img: "./images/bannerIMG/CHRISTIAN.png",
-            name: "Mask Girl",
+            name: "CHRISTIAN",
             imgOwner:
                "https://i.pinimg.com/236x/ab/90/d9/ab90d9385c969cf62c6e009810dfb849.jpg",
-            owner: "Poscai",
+            owner: "ET8WDGfsffB4YRHY6ZYzsFhNZzmGuDzuvTBYWffRUXyG",
             type: "Art",
             price: "29.2",
             isVideo: false,
          },
          {
             id: 1,
+            addressID: "EvijanWatson",
             img: "./images/bannerIMG/EvijanWatson.png",
-            name: "Inspect Girl",
+            name: "EvijanWatson",
             imgOwner:
                "https://i.pinimg.com/236x/10/b1/d0/10b1d0c15f2defa69f717b1aa52b9cf4.jpg",
-            owner: "Miek",
+            owner: "5fUafksmQyDUAJb9Kv8EN11f1H4uMuyj9C4Vxxw6pJBk",
             type: "Comic",
             price: "38.2",
             isVideo: false,
          },
         {
             id: 2,
+            addressID: "Abstract Wave",
             img: "./video/galaxy.mp4",
             name: "Abstract Wave",
             imgOwner: "https://i.pinimg.com/236x/54/26/7a/54267af70300dc246475a073d037c93a.jpg",
-            owner: "Lykie",
+            owner: "DNi8bkrc4cDxWXWpLfTrNWyJhRV3jG6tSEW94U7tWQFp",
             type: "Video",
             price: "12.7",
             isVideo: true

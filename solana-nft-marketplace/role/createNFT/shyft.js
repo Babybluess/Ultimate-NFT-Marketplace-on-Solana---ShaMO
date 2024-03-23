@@ -8,7 +8,7 @@ export async function confirmTransactionFromFrontend(connection, encodedTransact
     );
     const signedTx = await wallet.signTransaction(recoveredTransaction);
     const confirmTransaction = await connection.sendRawTransaction(
-      signedTx.serialize()
+      signedTx.serialize(),
     );
     return confirmTransaction;
   }

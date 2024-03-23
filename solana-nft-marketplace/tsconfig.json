@@ -31,6 +31,6 @@
       "utils/context/index.js",
       "utils/connectWallet/ConnectWallet.tsx",
       "role/createNFT/createnft.js"
-, "components/Banner.tsx", "role/sellNFT/sellNFT.js", "role/unlistNFT/index.js", "pages/nftDetail/[id]/index.jsx"   ],
+, "components/Banner.tsx", "role/sellNFT/sellNFT.js", "role/unlistNFT/index.js", "pages/nftDetail/[id]/index.jsx", "(models)/user.js"   ],
    "exclude": ["node_modules"]
 }

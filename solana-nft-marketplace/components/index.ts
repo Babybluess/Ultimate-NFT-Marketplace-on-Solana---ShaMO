@@ -10,6 +10,8 @@ import Footer from "./Footer";
 import UpdatedIMG from './modelUtils/UpdatedIMG'
 import NFTModel from "./modelUtils/NFTModel";
 import Bidding from "./Bidding";
+import LendingNFT from "./LendingNFT";
+import BiddingOnLending from "./BiddingOnLending";
 
 export {
     Navbar,
@@ -22,5 +24,7 @@ export {
     Footer,
     UpdatedIMG,
     NFTModel,
-    Bidding
+    Bidding,
+    LendingNFT,
+    BiddingOnLending
 }

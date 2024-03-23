@@ -1,9 +1,36 @@
 "use client";
-import React from "react";
-
+import React, { useState } from "react";
+import AIConsultancy from "@/role/AIConsultancy/AIConsultancy";
 function AISupport() {
+   const [inputPrompt, setInputPrompt] = useState("");
+   const [isGenerating, setIsGenerating] = useState(false);
+
+   const handleGenerate = async () => {
+      if (inputPrompt.trim() !== "") {
+         try {
+            setIsGenerating(true);
+            const consultancy = await AIConsultancy(inputPrompt);
+            console.log(consultancy);
+
+            const AIText = document.querySelector("#AIResponse");
+            if (AIText) {
+               AIText.innerHTML = consultancy;
+            } else {
+               console.error("AI Text Container not found");
+            }
+         } catch (error) {
+            console.error("Error generating text:", error);
+         } finally {
+            setIsGenerating(false);
+         }
+      }
+   };
+
    return (
-      <div id="AIConsultancy" className=" w-full justify-center items-center flex flex-col gap-10 border-x-4 border-[#F7F7F9] z-30 text-white px-10 py-5">
+      <div
+         id="AIConsultancy"
+         className=" w-full justify-center items-center flex flex-col gap-10 border-x-4 border-[#F7F7F9] z-30 text-white px-10 py-5"
+      >
          <div className=" w-full flex-col flex gap-2 text-white">
             <p className=" text-4xl font-semibold">AI Consultancy</p>
             <p className=" text-sm text-fuchsia-600">
@@ -17,15 +44,18 @@ function AISupport() {
                   className=" w-[70%] px-2 bg-transparent border-[1px] border-white rounded-lg placeholder:text-gray-300"
                   type="text"
                   placeholder="What do you need?"
+                  value={inputPrompt}
+                  onChange={(event) => setInputPrompt(event.target.value)}
                   required
                />
                <button
-                  className="cursor-pointer hover:bg-[#2C282F] text-white whitespace-nowrap inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2 w-[30%]"
+                  className={` ${isGenerating ? 'bg-gray-400 cursor-not-allowed' : ''} cursor-pointer hover:bg-[#2C282F] text-white whitespace-nowrap inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2 w-[30%]`}
                   type="button"
                   aria-haspopup="dialog"
                   aria-expanded="false"
                   aria-controls="radix-:Rl6ula:"
                   data-state="closed"
+                  onClick={() => handleGenerate()}
                >
                   Send Messages
                </button>
@@ -33,8 +63,7 @@ function AISupport() {
             <div className=" w-full flex justify-start items-center flex-col gap-2">
                <p>Answer the Questions:</p>
                <article className=" w-full min-h-[20vh] break-words bg-transparent border-[1px] border-white rounded-lg placeholder:text-gray-300 p-2">
-{/* Put AI answer the question */}
-                  <p></p>
+                  <p id="AIResponse"></p>
                </article>
             </div>
          </div>

@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { NFTModel, UpdatedIMG } from "@/components";
 import { CircularProgress } from "@mui/material";
-import { UseSelector, useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useWallet } from "@solana/wallet-adapter-react";
 
 function index() {
